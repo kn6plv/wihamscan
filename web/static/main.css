@@ -1,0 +1,60 @@
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+#graph-page {
+    position: relative;
+    border: 1px solid grey;
+    margin: 20px 0 0 20px;
+    width: 800px;
+    background-color: black;
+}
+
+#graph-grid,
+#waterfall-grid {
+    position: absolute;
+    z-index: 10;
+}
+
+#graph-grid path,
+#waterfall-grid path {
+    stroke: rgba(80,80,80,0.8);
+    fill: transparent;
+}
+
+#graph-data path {
+    stroke: red;
+    fill: transparent;
+    animation-name: path;
+    animation-duration: 1s;
+}
+
+#waterfall-page {
+    position: relative;
+    border: 1px solid grey;
+    margin-left: 20px;
+    width: 800px;
+    background-color: black;
+}
+
+#waterfall-page line {
+    stroke-width: 4px;
+}
+
+#waterfall-data svg {
+    display: block;
+    height: 2px;
+    width: 800px;
+}
+
+#waterfall-data {
+    overflow: hidden;
+}
+
+#waterfall-data-scroll {
+    position: relative;
+}

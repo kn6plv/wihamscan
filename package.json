@@ -1,0 +1,19 @@
+{
+  "name": "OsciumWiFiMonitor",
+  "gypfile": true,
+  "dependencies": {
+    "bindings": "^1.5.0",
+    "debug": "^4.3.4",
+    "fast-glob": "^3.2.12",
+    "handlebars": "^4.7.7",
+    "koa": "^2.13.4",
+    "koa-compress": "^5.1.0",
+    "koa-router": "^12.0.0",
+    "koa-websocket": "^7.0.0",
+    "nan": "^2.16.0",
+    "node-addon-api": "^5.0.0"
+  },
+  "scripts": {
+    "build": "node-gyp --debug --thin=yes rebuild"
+  }
+}
