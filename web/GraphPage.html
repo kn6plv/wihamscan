@@ -1,9 +1,4 @@
 <div id="graph-page">
-    <div id="graph-info">
-        <svg id="graph-cursor">
-            <path />
-        </svg>
-    </div>
     <svg id="graph-grid">
         <path d="{{graph_grid}}" />
         <text class="htext">
@@ -22,18 +17,4 @@
             <animate attributeName="d" dir="1s" fill="freeze" values="" />
         </path>
     </svg>
-    <script>
-        const info = document.getElementById("graph-info");
-        const cursor = document.getElementById("graph-cursor");
-        cursor.addEventListener("mouseenter", () => {
-            info.style.opacity = "1";
-        });
-        cursor.addEventListener("mouseleave", () => {
-            info.style.opacity = "0";
-        });
-        cursor.addEventListener("mousemove", e => {
-            cursor.querySelector("path").setAttribute("d", `M ${e.offsetX} 0 V ${info.clientHeight}`);
-            send("move_cursor", { x: e.offsetX });
-        });
-    </script>
 </div>

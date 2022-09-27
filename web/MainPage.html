@@ -10,8 +10,28 @@
 </head>
 <body>
     <div id="app">
+        <div id="app-info">
+            <svg id="app-cursor">
+                <path />
+            </svg>
+        </div>
         {{> GraphPage }}
         {{> WaterfallPage }}
+        {{> BandInfoPage }}
     </div>
+    <script>
+        const info = document.getElementById("app-info");
+        const cursor = document.getElementById("app-cursor");
+        cursor.addEventListener("mouseenter", () => {
+            info.style.opacity = "1";
+        });
+        cursor.addEventListener("mouseleave", () => {
+            info.style.opacity = "0";
+        });
+        cursor.addEventListener("mousemove", e => {
+            cursor.querySelector("path").setAttribute("d", `M ${e.offsetX} 0 V ${info.clientHeight}`);
+            send("move_cursor", { x: e.offsetX });
+        });
+    </script>
 </body>
 </html>

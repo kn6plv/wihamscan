@@ -54,17 +54,19 @@ svg {
     animation-duration: 1s;
 }
 
-#graph-info {
+#app-info {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 800px;
+    height: 600px;
+    margin-top: 2px;
     z-index: 20;
 }
-#graph-cursor {
+#app-cursor {
     width: 100%;
     height: 100%;
 }
-#graph-cursor path {
+
+#app-cursor path {
     stroke: yellow;
     fill: transparent;
     stroke-width: 0.5px;
@@ -93,4 +95,25 @@ svg {
 
 #waterfall-data-scroll {
     position: relative;
+}
+
+#bandinfo-page {
+    position: absolute;
+    top: 25px;
+    left: 840px;
+    width: 100px;
+    height: 400px;
+    font: arial;
+}
+
+#bandinfo-page .title {
+    font-size: 24px;
+    padding-bottom: 10px;
+    color: #a0a0a0;
+}
+
+#bandinfo-page .info {
+    font-size: 12px;
+    padding-bottom: 20px;
+    color: white;
 }

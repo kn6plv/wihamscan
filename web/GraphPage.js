@@ -53,9 +53,13 @@ class GraphPage extends BasePage {
         const p = points[Math.floor(this.cursor.x / width * points.length)];
         const dbi = p / 100 * (config.maxRssi - config.noise) + config.noise;
         const mhz = Math.round(this.cursor.x / width * (config.maxFreq - config.minFreq) + config.minFreq)
-        this.send("stats.update", {
-            mhz: mhz,
-            dbi: dbi
+        this.send("html.update", {
+            id: "bandinfo-page",
+            html: this.Template.BandInfo({
+                band: `${config.minFreq} - ${config.maxFreq}`,
+                freq: mhz,
+                signal: Math.round(dbi),
+            })
         });
     }
 }

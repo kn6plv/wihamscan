@@ -16,4 +16,4 @@ process.on("SIGTERM", async () => {
 const WiPryClarity = require("./WiPryClarity");
 WiPryClarity.open();
 
-require("./web/Web").run();
+require("./web/Web").open();

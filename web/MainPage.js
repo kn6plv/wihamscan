@@ -42,6 +42,7 @@ class MainPage extends BasePage {
         let wgrid = "";
         const htext = [];
         const vtext = [];
+        let band = "";
 
         const config = WiPryClarity.config;
         if (config) {
@@ -72,6 +73,8 @@ class MainPage extends BasePage {
                     t: `${r}`
                 });
             }
+
+            band = `${config.minFreq} - ${config.maxFreq}`;
         }
 
         return this.Template.MainPage({
@@ -81,7 +84,10 @@ class MainPage extends BasePage {
             graph_grid: grid,
             waterfall_grid: wgrid,
             graph_vtext: vtext,
-            graph_htext: htext
+            graph_htext: htext,
+            band: band,
+            freq: "-",
+            signal: "-",
         });
     }
 }
