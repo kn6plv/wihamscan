@@ -1,10 +1,12 @@
 {
   "name": "OsciumWiFiMonitor",
+  "version": "0.0.1",
   "gypfile": true,
   "main": "main.js",
   "dependencies": {
     "bindings": "^1.5.0",
     "debug": "^4.3.4",
+    "electron-squirrel-startup": "^1.0.0",
     "fast-glob": "^3.2.12",
     "handlebars": "^4.7.7",
     "koa": "^2.13.4",
@@ -15,10 +17,44 @@
     "node-addon-api": "^5.0.0"
   },
   "scripts": {
-    "start": "electron .",
-    "build": "node-gyp --debug --thin=yes rebuild"
+    "start": "electron-forge start",
+    "build": "node-gyp --debug --thin=yes rebuild",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.66",
+    "@electron-forge/maker-deb": "^6.0.0-beta.66",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.66",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.66",
+    "@electron-forge/maker-zip": "^6.0.0-beta.66",
     "electron": "^21.0.0"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "OsciumWiFiMonitor"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }
