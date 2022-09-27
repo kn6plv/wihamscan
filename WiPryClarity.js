@@ -50,6 +50,7 @@ class WiPryClarity extends EventEmitter {
                         samples: 512
                     };
                     Log("connected", this.config);
+                    this.emit("opened");
                     this.emit("connected", this.config);
                 }
                 else {

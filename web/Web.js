@@ -12,29 +12,34 @@ const webport = parseInt(process.env.PORT || 8080);
 
 const Web = {
 
-    run() {
-        Log("running:");
-        const Web = Websockify(new Koa());
-        Web.on("error", err => console.error(err));
+    open() {
+        Log("open");
+        this.web = Websockify(new Koa());
+        this.web.on("error", err => console.error(err));
 
         const root = Router();
         const wsroot = Router();
 
         Pages(root, wsroot);
 
-        Web.use(KoaCompress());
-        Web.use(root.middleware());
-        Web.ws.use(wsroot.middleware());
-        Web.ws.use(async (ctx, next) => {
+        this.web.use(KoaCompress());
+        this.web.use(root.middleware());
+        this.web.ws.use(wsroot.middleware());
+        this.web.ws.use(async (ctx, next) => {
         await next(ctx);
         if (ctx.websocket.listenerCount("message") === 0) {
             ctx.websocket.close();
         }
         });
-        Web.listen({
+        this.server = this.web.listen({
             host: "0.0.0.0",
             port: webport
         });
+    },
+
+    close() {
+        Log("close");
+        this.server.close();
     }
 
 }
