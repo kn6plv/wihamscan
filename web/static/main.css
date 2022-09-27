@@ -1,22 +1,29 @@
 
+svg {
+    display: block;
+}
+
 #app {
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
+    padding: 20px;
 }
 
 #graph-page {
     position: relative;
     border: 1px solid grey;
-    margin: 20px 0 0 20px;
     width: 800px;
+    height: 400px;
     background-color: black;
 }
 
 #graph-grid,
 #waterfall-grid {
     position: absolute;
+    width: 100%;
+    height: 100%;
     z-index: 10;
 }
 
@@ -26,18 +33,48 @@
     fill: transparent;
 }
 
+#graph-grid tspan {
+    font-size: 9px;
+    fill: rgba(255,255,255,0.8);
+}
+
+#graph-grid .vtext {
+    transform: rotate(90deg);
+}
+
+#graph-data {
+    width: 100%;
+    height: 100%;
+}
+
 #graph-data path {
-    stroke: red;
-    fill: transparent;
+    stroke: yellow;
+    fill: darkslateblue;
     animation-name: path;
     animation-duration: 1s;
+}
+
+#graph-info {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+}
+#graph-cursor {
+    width: 100%;
+    height: 100%;
+}
+#graph-cursor path {
+    stroke: yellow;
+    fill: transparent;
+    stroke-width: 0.5px;
 }
 
 #waterfall-page {
     position: relative;
     border: 1px solid grey;
-    margin-left: 20px;
     width: 800px;
+    height: 200px;
     background-color: black;
 }
 
@@ -46,7 +83,6 @@
 }
 
 #waterfall-data svg {
-    display: block;
     height: 2px;
     width: 800px;
 }

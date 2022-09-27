@@ -1,4 +1,4 @@
-#! /usr/bin/env nodejs
+#! /usr/bin/env node
 
 process.on("uncaughtException", e => {
     console.error("uncaughtException:");

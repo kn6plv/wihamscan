@@ -54,6 +54,9 @@ async function WS(ctx) {
                     fn = ctx[cmd];
                 }
                 if (!fn) {
+                    fn = ctx.cmd_dispatch;
+                }
+                if (!fn) {
                     ctx = null;
                     fn = State[cmd];
                 }

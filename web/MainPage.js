@@ -23,10 +23,25 @@ class MainPage extends BasePage {
         await this.waterfall.cmd_close();
     }
 
+    async cmd_dispatch(msg) {
+        let fn = this.graph[`cmd_${msg.cmd}`];
+        if (fn) {
+            await fn.call(this.graph, msg);
+        }
+        else {
+            fn = this.waterfall[`cmd_${msg.cmd}`];
+            if (fn) {
+                await fn.call(this.waterfall, msg);
+            }
+        }
+    }
+
     async html() {
 
         let grid = "";
         let wgrid = "";
+        const htext = [];
+        const vtext = [];
 
         const config = WiPryClarity.config;
         if (config) {
@@ -35,19 +50,27 @@ class MainPage extends BasePage {
             const maxFreq = config.maxFreq;
             const xscale = width / (maxFreq - minFreq);
 
-            for (let f = Math.ceil(minFreq / 10) * 10; f < maxFreq; f += 10) {
+            for (let f = Math.ceil(minFreq / 20) * 20; f < maxFreq; f += 20) {
                 const x = (f - minFreq) * xscale;
                 grid += ` M ${x} ${height} V 0`;
                 wgrid += ` M ${x} ${wheight} V 0`;
+                vtext.push({
+                    x: x,
+                    t: `${(f / 1000).toFixed(2)}`
+                });
             }
 
-            const minRssi = config.minRssi;
+            const minRssi = config.noise;
             const maxRssi = config.maxRssi;
             const yscale = height / (maxRssi - minRssi);
 
             for (let r = Math.ceil(minRssi / 10) * 10; r < maxRssi; r += 10) {
-                const y = (r - minRssi) * yscale;
+                const y = height - (r - minRssi) * yscale;
                 grid += ` M ${width} ${y} H 0`;
+                htext.push({
+                    y: y + 9,
+                    t: `${r}`
+                });
             }
         }
 
@@ -56,7 +79,9 @@ class MainPage extends BasePage {
             graph_height: height,
             waterfall_height: wheight,
             graph_grid: grid,
-            waterfall_grid: wgrid
+            waterfall_grid: wgrid,
+            graph_vtext: vtext,
+            graph_htext: htext
         });
     }
 }

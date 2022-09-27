@@ -43,7 +43,7 @@ class WiPryClarity extends EventEmitter {
                 if (code) {
                     this.config = {
                         minRssi: (a + d) / 2,
-                        maxRssi: -50, // (b + e) / 2,
+                        maxRssi: Math.min(-40, (b + e) / 2),
                         noise: (c + f) / 2,
                         minFreq: g,
                         maxFreq: h,
