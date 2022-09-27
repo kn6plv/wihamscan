@@ -57,7 +57,7 @@ class MainPage extends BasePage {
                 wgrid += ` M ${x} ${wheight} V 0`;
                 vtext.push({
                     x: x,
-                    t: `${(f / 1000).toFixed(2)}`
+                    t: `${f}`
                 });
             }
 

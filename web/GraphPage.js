@@ -8,7 +8,7 @@ const width = 800;
 class GraphPage extends BasePage {
 
     async cmd_init() {
-        this.cursor = { x: 0 };
+        this.cursor = { x: null };
 
         this.graphUpdated = this.graphUpdated.bind(this);
 
@@ -49,18 +49,30 @@ class GraphPage extends BasePage {
 
     pointUpdated() {
         const config = this.graph.config;
-        const points = this.graph.points;
-        const p = points[Math.floor(this.cursor.x / width * points.length)];
-        const dbi = p / 100 * (config.maxRssi - config.noise) + config.noise;
-        const mhz = Math.round(this.cursor.x / width * (config.maxFreq - config.minFreq) + config.minFreq)
-        this.send("html.update", {
-            id: "bandinfo-page",
-            html: this.Template.BandInfo({
-                band: `${config.minFreq} - ${config.maxFreq}`,
-                freq: mhz,
-                signal: Math.round(dbi),
-            })
-        });
+        if (typeof this.cursor.x === "number") {
+            const points = this.graph.points;
+            const p = points[Math.floor(this.cursor.x / width * points.length)];
+            const dbi = p / 100 * (config.maxRssi - config.noise) + config.noise;
+            const mhz = Math.round(this.cursor.x / width * (config.maxFreq - config.minFreq) + config.minFreq)
+            this.send("html.update", {
+                id: "bandinfo-page",
+                html: this.Template.BandInfo({
+                    band: `${config.minFreq} - ${config.maxFreq}`,
+                    freq: mhz,
+                    signal: Math.round(dbi),
+                })
+            });
+        }
+        else {
+            this.send("html.update", {
+                id: "bandinfo-page",
+                html: this.Template.BandInfo({
+                    band: `${config.minFreq} - ${config.maxFreq}`,
+                    freq: "-",
+                    signal: "-",
+                })
+            });
+        }
     }
 }
 

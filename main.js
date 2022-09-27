@@ -2,25 +2,32 @@ const { app, BrowserWindow } = require('electron');
 const WiPryClarity = require("./WiPryClarity");
 const Web = require("./web/Web");
 
-WiPryClarity.open();
-Web.open();
-
+let address = {};
 let win;
+
+Web.open(0).then(a => {
+    address = a;
+    if (win) {
+        win.reload();
+    }
+});
 
 WiPryClarity.on("opened", () => {
     if (win) {
         win.reload();
     }
 });
+WiPryClarity.open();
 
 const createWindow = () => {
     win = new BrowserWindow({
+        backgroundColor: 'black',
         width: 1000,
         height: 680,
         resizable: false
     });
 
-    win.loadURL("http://localhost:8080/");
+    win.loadURL(`http://localhost:${address.port}/`);
 };
 
 app.whenReady().then(() => {

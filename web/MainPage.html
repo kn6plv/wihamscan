@@ -27,6 +27,7 @@
         });
         cursor.addEventListener("mouseleave", () => {
             info.style.opacity = "0";
+            send("move_cursor", { x: null });
         });
         cursor.addEventListener("mousemove", e => {
             cursor.querySelector("path").setAttribute("d", `M ${e.offsetX} 0 V ${info.clientHeight}`);

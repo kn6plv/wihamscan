@@ -12,7 +12,7 @@ const webport = parseInt(process.env.PORT || 8080);
 
 const Web = {
 
-    open() {
+    async open(port) {
         Log("open");
         this.web = Websockify(new Koa());
         this.web.on("error", err => console.error(err));
@@ -33,8 +33,9 @@ const Web = {
         });
         this.server = this.web.listen({
             host: "0.0.0.0",
-            port: webport
+            port: port === 0 ? undefined : webport
         });
+        return new Promise(resolve => this.server.once("listening", () => resolve(this.server.address())));
     },
 
     close() {
