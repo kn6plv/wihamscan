@@ -78,6 +78,7 @@ svg {
     width: 800px;
     height: 200px;
     background-color: black;
+    overflow: hidden;
 }
 
 #waterfall-page line {
@@ -87,10 +88,6 @@ svg {
 #waterfall-data svg {
     height: 2px;
     width: 800px;
-}
-
-#waterfall-data {
-    overflow: hidden;
 }
 
 #waterfall-data-scroll {
@@ -103,7 +100,6 @@ svg {
     left: 840px;
     width: 100px;
     height: 400px;
-    font: arial;
 }
 
 #bandinfo-page .title {
