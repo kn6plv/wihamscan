@@ -23,7 +23,7 @@ const createWindow = () => {
     win = new BrowserWindow({
         backgroundColor: 'black',
         width: 1000,
-        height: 680,
+        height: 675,
         resizable: false
     });
 
