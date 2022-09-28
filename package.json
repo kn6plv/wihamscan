@@ -1,5 +1,5 @@
 {
-  "name": "OsciumWiFiMonitor",
+  "name": "Amateur Radio WiFi Scanner",
   "version": "0.0.1",
   "gypfile": true,
   "main": "main.js",
@@ -32,12 +32,14 @@
   },
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "icon": "icons/icon.icns"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "OsciumWiFiMonitor"
+            "name": "Amateur Radio WiFi Scanner"
           }
         },
         {

@@ -42,22 +42,22 @@ class GraphPage extends BasePage {
         d += ` ${width} ${height} Z`;
         this.send("svg.path.update", {
             id: "graph-data-path",
-            d: d
+            d: d,
+            t: this.graph.config.period
         });
         this.pointUpdated();
     }
 
     pointUpdated() {
         const config = this.graph.config;
-        if (typeof this.cursor.x === "number") {
-            const points = this.graph.points;
+        const points = this.graph.points;
+        if (typeof this.cursor.x === "number" && config && points) {
             const p = points[Math.floor(this.cursor.x / width * points.length)];
             const dbi = p / 100 * (config.maxRssi - config.noise) + config.noise;
             const mhz = Math.round(this.cursor.x / width * (config.maxFreq - config.minFreq) + config.minFreq)
             this.send("html.update", {
-                id: "bandinfo-page",
+                id: "band-info",
                 html: this.Template.BandInfo({
-                    band: `${config.minFreq} - ${config.maxFreq}`,
                     freq: mhz,
                     signal: Math.round(dbi),
                 })
@@ -65,9 +65,8 @@ class GraphPage extends BasePage {
         }
         else {
             this.send("html.update", {
-                id: "bandinfo-page",
+                id: "band-info",
                 html: this.Template.BandInfo({
-                    band: `${config.minFreq} - ${config.maxFreq}`,
                     freq: "-",
                     signal: "-",
                 })

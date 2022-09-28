@@ -101,8 +101,9 @@ onMessage['svg.path.update'] = msg => {
       const last = oanimate.getAttribute("values").split(';');
       svgpath.removeChild(oanimate);
       const animate = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+      const t = msg.value.t;
       animate.setAttribute("attributeName", "d");
-      animate.setAttribute("dur", "1s");
+      animate.setAttribute("dur", `${t}s`);
       animate.setAttribute('fill', 'freeze');
       if (!last[0]) {
         animate.setAttribute("values", msg.value.d);
@@ -129,10 +130,10 @@ onMessage['waterfall.update'] = msg => {
     waterfall.style.top = `-2px`;
     waterfall.insertBefore(e, waterfall.firstElementChild);
     setTimeout(() => {
-      waterfall.style.transition = "top 1s linear";
+      waterfall.style.transition = `top ${msg.value.t - 0.01}s linear`;
       waterfall.style.top = "0px";
     }, 10);
-    if (waterfall.childElementCount > 100) {
+    if (waterfall.childElementCount > 120) {
       waterfall.removeChild(waterfall.lastElementChild);
     }
   }

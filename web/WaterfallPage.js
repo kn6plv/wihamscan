@@ -33,7 +33,8 @@ class WaterfallPage extends BasePage {
         }
         this.send("waterfall.update", {
             id: "waterfall-data-scroll",
-            l: `<svg>${l}</svg>`
+            l: `<svg>${l}</svg>`,
+            t: this.waterfall.config.period
         });
     }
 }

@@ -17,7 +17,7 @@ WiPryClarity.on("opened", () => {
         win.reload();
     }
 });
-WiPryClarity.open();
+WiPryClarity.open(WiPryClarity.BAND_5GHZ);
 
 const createWindow = () => {
     win = new BrowserWindow({

@@ -1,3 +1,18 @@
 <div id="bandinfo-page">
-    {{> BandInfo }}
+    <div class="title">Band</div>
+    <div class="info">
+        <select>
+            <option value="0" {{#if (eq band 0)}}selected{{/if}}>2400 - 2500 MHz</option>
+            <option value="1" {{#if (eq band 1)}}selected{{/if}}>5145 - 5860 MHz</option>
+            <option value="2" {{#if (eq band 2)}}selected{{/if}}>5925 - 7125 MHz</option>
+        </select>
+    </div>
+    <div id="band-info">
+        {{> BandInfo }}
+    </div>
+    <script>
+        document.querySelector("#bandinfo-page .info select").addEventListener("change", e => {
+            send("change_band", { band: parseInt(e.target.value) });
+        });
+    </script>
 </div>

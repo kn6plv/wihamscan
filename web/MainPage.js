@@ -23,6 +23,19 @@ class MainPage extends BasePage {
         await this.waterfall.cmd_close();
     }
 
+    async cmd_change_band(msg) {
+        const band = msg.value.band;
+        switch (band) {
+            case WiPryClarity.BAND_2_4GHZ:
+            case WiPryClarity.BAND_5GHZ:
+            case WiPryClarity.BAND_6E:
+                WiPryClarity.changeBand(band);
+                break;
+            default:
+                break;
+        }
+    }
+
     async cmd_dispatch(msg) {
         let fn = this.graph[`cmd_${msg.cmd}`];
         if (fn) {
@@ -42,7 +55,7 @@ class MainPage extends BasePage {
         let wgrid = "";
         const htext = [];
         const vtext = [];
-        let band = "";
+        let band = null;
 
         const config = WiPryClarity.config;
         if (config) {
@@ -74,7 +87,7 @@ class MainPage extends BasePage {
                 });
             }
 
-            band = `${config.minFreq} - ${config.maxFreq}`;
+            band = WiPryClarity.band;
         }
 
         return this.Template.MainPage({

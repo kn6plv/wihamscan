@@ -117,3 +117,11 @@ svg {
     padding-bottom: 20px;
     color: white;
 }
+
+#bandinfo-page .info select {
+    background: inherit;
+    color: inherit;
+    font: inherit;
+    padding: 2px;
+    outline: none;
+}

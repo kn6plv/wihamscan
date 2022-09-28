@@ -25,8 +25,9 @@ class MyMonitor : public WiPryClarityDelegate, public Napi::ObjectWrap<MyMonitor
             delete wipry;
         }
 
-        bool open() {
+        bool open(int band) {
             //printf("open\n");
+            this->band = (oscium::WiPryClarity::DataType)band;
             bool r = wipry->startCommunication();
             //printf("r = %d\n", r);
             if (!r) {
@@ -42,6 +43,7 @@ class MyMonitor : public WiPryClarityDelegate, public Napi::ObjectWrap<MyMonitor
         }
 
         WiPryClarity* wipry;
+        oscium::WiPryClarity::DataType band;
 
         // WiPryClarityDelegate
     
@@ -50,7 +52,7 @@ class MyMonitor : public WiPryClarityDelegate, public Napi::ObjectWrap<MyMonitor
             wipry->getEvenRssiLimts(&this->min[0], &this->max[0], &this->noise[0]);
             wipry->getOddRssiLimts(&this->min[1], &this->max[1], &this->noise[1]);
             wipry->get5GHzBoundary(&this->minFreq, &this->maxFreq);
-            wipry->startRssiData(oscium::WiPryClarity::DataType::RSSI_5GHZ, 0, 0, 0);
+            wipry->startRssiData(this->band, 0, 0, 0);
 
             auto callback = [this](Napi::Env env, Napi::Function jsCallback) {
                 jsCallback.Call({
@@ -114,7 +116,7 @@ class MyMonitor : public WiPryClarityDelegate, public Napi::ObjectWrap<MyMonitor
         float noise[2];
 
         void Open(const Napi::CallbackInfo& info) {
-            this->open();
+            this->open((int)info[0].As<Napi::Number>());
         }
 
         void Close(const Napi::CallbackInfo& info) {
