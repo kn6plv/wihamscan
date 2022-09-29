@@ -12,6 +12,7 @@ class Graph extends EventEmitter {
 
         this.config = null;
         this.mon = WiPryClarity;
+        this.lastUpdate = Date.now();
     }
 
     open() {
@@ -32,16 +33,17 @@ class Graph extends EventEmitter {
     }
 
     _onData(_, data) {
-        const offset = -this.config.noise;
-        const scale = 100 / (this.config.maxRssi - this.config.noise);
+        const now = Date.now();
+        const keep = Math.pow(0.5, (now - this.lastUpdate) / 1000);
+        this.lastUpdate = now;
         for (let i = this.points.length - 1; i >= 0; i--) {
             const opoint = this.points[i];
-            const npoint = (data[i] + offset) * scale;
-            if (npoint > opoint) {
+            const npoint = data[i];
+            if (npoint > opoint || opoint === 0) {
                 this.points[i] = npoint;
             }
             else {
-                this.points[i] = opoint * 0.5 + npoint * 0.5;
+                this.points[i] = opoint * keep + npoint * (1 - keep);
             }
         }
         this.emit("update");

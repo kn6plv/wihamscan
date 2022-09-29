@@ -32,12 +32,13 @@ class GraphPage extends BasePage {
 
     graphUpdated() {
         const points = this.graph.points;
+        const config = this.graph.config;
         const len = points.length;
         const xscale = width / len;
-        const yscale = height / 100;
-        let d = `M 0 ${height} L 0 ${(98 - points[0]) * yscale}`;
+        const yscale = height / (config.maxRssi - config.noise);
+        let d = `M 0 ${height} L 0 ${(config.maxRssi - points[0]) * yscale}`;
         for (let i = 1; i < len; i++) {
-            d += ` ${i * xscale} ${(98 - points[i]) * yscale}`;
+            d += ` ${i * xscale} ${(config.maxRssi - points[i]) * yscale}`;
         }
         d += ` ${width} ${height} Z`;
         this.send("svg.path.update", {

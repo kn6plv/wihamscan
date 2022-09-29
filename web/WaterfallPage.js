@@ -1,4 +1,5 @@
 const Waterfall = require("../Waterfall");
+const { config } = require("../WiPryClarity");
 const BasePage = require("./BasePage");
 
 class WaterfallPage extends BasePage {
@@ -21,14 +22,15 @@ class WaterfallPage extends BasePage {
 
     waterfallUpdated() {
         const points = this.waterfall.points;
+        const config = this.waterfall.config;
         const len = points.length;
         const width = 800;
         const xscale = width / len;
         let l = '';
         for (let i = 0; i < len; i++) {
-            const p = points[i];
+            const p = points[i] - config.noise;
             const x = i * xscale;
-            const c = `hsl(200,100%,${Math.min(100, 5 + p * p / 15)}%)`;
+            const c = `hsl(200,100%,${Math.min(100, 5 + p * p / 10)}%)`;
             l += `<line x1="${x}" y1="0" x2="${x + xscale}" y2="0" style="stroke:${c};" />`;
         }
         this.send("waterfall.update", {

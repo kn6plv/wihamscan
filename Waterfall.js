@@ -32,12 +32,10 @@ class Waterfall extends EventEmitter {
     }
 
     _onData(_, data) {
-        const offset = -this.config.noise;
-        const scale = 100 / (this.config.maxRssi - this.config.noise);
         for (let i = this.points.length - 1; i >= 0; i--) {
             const opoint = this.points[i];
-            const npoint = (data[i] + offset) * scale;
-            if (npoint > opoint) {
+            const npoint = data[i];
+            if (npoint > opoint || opoint == 0) {
                 this.points[i] = npoint;
             }
             else {

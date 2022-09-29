@@ -14,7 +14,8 @@
     "koa-compress": "^5.1.0",
     "koa-router": "^12.0.0",
     "koa-websocket": "^7.0.0",
-    "node-addon-api": "^5.0.0"
+    "node-addon-api": "^5.0.0",
+    "usb": "^2.5.2"
   },
   "scripts": {
     "start": "electron-forge start",
