@@ -26,7 +26,7 @@ class MyMonitor : public WiPryClarityDelegate, public Napi::ObjectWrap<MyMonitor
         }
 
         bool open(int band) {
-            //printf("open\n");
+            //printf("open %d\n", band);
             this->band = (oscium::WiPryClarity::DataType)band;
             bool r = wipry->startCommunication();
             //printf("r = %d\n", r);
@@ -51,7 +51,21 @@ class MyMonitor : public WiPryClarityDelegate, public Napi::ObjectWrap<MyMonitor
             //printf("connected\n");
             wipry->getEvenRssiLimts(&this->min[0], &this->max[0], &this->noise[0]);
             wipry->getOddRssiLimts(&this->min[1], &this->max[1], &this->noise[1]);
-            wipry->get5GHzBoundary(&this->minFreq, &this->maxFreq);
+            switch ((WiPryClarity::DataType)this->band) {
+                case WiPryClarity::DataType::RSSI_2_4GHZ:
+                    wipry->get2_4GHzBoundary(&this->minFreq, &this->maxFreq);
+                    break;
+                case WiPryClarity::DataType::RSSI_5GHZ:
+                    wipry->get5GHzBoundary(&this->minFreq, &this->maxFreq);
+                    break;
+                case WiPryClarity::DataType::RSSI_6E:
+                    wipry->get6EBoundary(&this->minFreq, &this->maxFreq);
+                    break;
+                case WiPryClarity::DataType::RSSI_DUAL25:
+                default:
+                    break;
+            }
+            //printf("startRssiData\n");
             wipry->startRssiData(this->band, 0, 0, 0);
 
             auto callback = [this](Napi::Env env, Napi::Function jsCallback) {
@@ -107,6 +121,9 @@ class MyMonitor : public WiPryClarityDelegate, public Napi::ObjectWrap<MyMonitor
                 default:
                     break;
             }
+        }
+
+        void wipryClarityDidReceiveBeaconCaptureData(WiPryClarity *wipryClarity, std::vector<uint8_t> beaconCaptures) {
         }
 
         float minFreq;
