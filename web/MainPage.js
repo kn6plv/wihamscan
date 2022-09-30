@@ -24,16 +24,7 @@ class MainPage extends BasePage {
     }
 
     async cmd_change_band(msg) {
-        const band = msg.value.band;
-        switch (band) {
-            case WiPryClarity.BAND_2_4GHZ:
-            case WiPryClarity.BAND_5GHZ:
-            case WiPryClarity.BAND_6E:
-                WiPryClarity.changeBand(band);
-                break;
-            default:
-                break;
-        }
+        WiPryClarity.changeBand(msg.value.band);
     }
 
     async cmd_dispatch(msg) {

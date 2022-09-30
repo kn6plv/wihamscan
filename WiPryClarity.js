@@ -1,10 +1,15 @@
 const Log = require("debug")("wipryclarity");
 const EventEmitter = require("events");
+const { loadavg } = require("os");
 const USB = require("usb");
 
 const BAND_RSSI_2_4GHZ = 0;
-const BAND_RSSI_5GHZ = 1;
-const BAND_RSSI_6E = 2;
+const BAND_RSSI_5GHZ   = 1;
+const BAND_RSSI_6E     = 2;
+
+const BAND_HAM_22_26 = 3;
+const BAND_HAM_32_36 = 4;
+const BAND_HAM_55_63 = 5;
 
 const VID = 0x26ae;
 const PID = 0x000c;
@@ -27,17 +32,31 @@ const bands = {
         minFreq: 5925,
         maxFreq: 7125,
         stepFreq: 100
-    }
+    },
+    [BAND_HAM_22_26]: {
+        bandId: BAND_HAM_22_26,
+        minFreq: 2200,
+        maxFreq: 2600,
+        stepFreq: 100
+    },
+    [BAND_HAM_32_36]: {
+        bandId: BAND_HAM_32_36,
+        minFreq: 3200,
+        maxFreq: 3600,
+        stepFreq: 100
+    },
+    [BAND_HAM_55_63]: {
+        bandId: BAND_HAM_55_63,
+        minFreq: 5500,
+        maxFreq: 6300,
+        stepFreq: 100
+    },
 };
 
 class WiPryClarity extends EventEmitter {
 
     constructor() {
         super();
-
-        this.BAND_2_4GHZ = BAND_RSSI_2_4GHZ;
-        this.BAND_5GHZ = BAND_RSSI_5GHZ;
-        this.BAND_6E = BAND_RSSI_6E;
 
         this.device = USB.findByIds(VID, PID);
         if (!this.device) {
@@ -52,19 +71,7 @@ class WiPryClarity extends EventEmitter {
         Log("open", band);
         this.opened++;
         if (this.opened === 1) {
-            this.band = typeof band == "number" ? band : this.BAND_5GHZ;
-
-            // Setup the physical device
-            this.device.open(false);
-            await new Promise(r => this.device.reset(r));
-            await new Promise(r => this.device.setConfiguration(1, r));
-            this.iface = this.device.interface(1);
-            this.iface.claim();
-            await new Promise(r => this.iface.setAltSetting(1, r));
-
-            this.endpoint4 = this.iface.endpoint(4 + 128);
-            this.endpoint3 = this.iface.endpoint(3);
-
+            this.band = typeof band == "number" ? band : BAND_RSSI_5GHZ;
             await this._configure(bands[this.band]);
         }
         else if (this.config) {
@@ -73,27 +80,60 @@ class WiPryClarity extends EventEmitter {
         }
     }
 
-    async close() {
+    async close(force) {
         Log("close");
-        if (--this.opened <= 0) {
+        if (--this.opened <= 0 || force) {
             this.opened = 0;
-            this.polling = false;
-            this.device.close();
+            await this._closeDevice();
         }
     }
 
     async changeBand(band) {
         if (band !== this.band) {
             this.band = band;
-            this.polling = false;
-            while (this.running) {
-                await new Promise(r => setTimeout(r, 1000));
-            }
-            await this._configure();
+            await this._closeDevice();
+            await this._configure(bands[this.band]);
         }
     }
 
+    async _openDevice() {
+        this.device.open(false);
+        await new Promise(r => this.device.reset(r));
+        await new Promise(r => this.device.setConfiguration(1, r));
+        this.iface = this.device.interface(1);
+        this.iface.claim();
+        await new Promise(r => this.iface.setAltSetting(1, r));
+
+        this.endpoint4 = this.iface.endpoint(4 + 128);
+        this.endpoint3 = this.iface.endpoint(3);
+    }
+
+    async _closeDevice() {
+        this.polling = false;
+        while (this.running) {
+            await new Promise(r => setTimeout(r, 1000));
+        }
+        if (this.iface) {
+            await new Promise(r => this.iface.release(r));
+            this.iface = null;
+        }
+        this.endpoint3 = null;
+        this.endpoint4 = null;
+        this.device.close();
+    }
+
     async _configure(config) {
+        // Setup the physical device
+        for (;;) {
+            try {
+                await this._openDevice();
+                break;
+            }
+            catch (_) {
+                await this._closeDevice();
+            }
+        }
+        
         this.info = await this._reset();
         await this._unknown_cmd1();
         await this._sweep(config);
@@ -134,15 +174,21 @@ class WiPryClarity extends EventEmitter {
 
     async _reset() {
         Log("_reset");
+        let count = 10;
         for (;;) {
             let done = false;
             let buffer = null;
             this.endpoint4.transfer(20000, (e, b) => {
+                Log("_reset in:", e, b);
                 buffer = b;
                 done = true;
             });
             while (!done) {
-                await this._send([ 0x03 ]);
+                count++;
+                if (count > 10) {
+                    await this._send([ 0x03 ]);
+                    count = 0;
+                }
                 await new Promise(r => setTimeout(r, 100));
             }
             Log(buffer);
@@ -182,15 +228,16 @@ class WiPryClarity extends EventEmitter {
     }
 
     async _sweep(config) {
-        const cmd = [ 0x01 ];
         const options = {
             "5": {
+                x: 0x00,
                 a: 0x40,
                 b: 0xBC,
                 c: 0x1F,
                 d: 0x0A,
             },
             "2_4": {
+                x: 0x01,
                 a: 0x00,
                 b: 0xEE,
                 c: 0x2F,
@@ -198,11 +245,12 @@ class WiPryClarity extends EventEmitter {
             }
         };
         const o = config.minFreq < 2500 ?  options["2_4"] : options["5"];
+        const cmd = [ config.stepFreq == 100 ? 0x02 : 0x01 ];
         let count = 0;
         for (let freq = config.minFreq; count < 16 && freq < config.maxFreq; count++, freq += config.stepFreq) {
             const f = freq - 800;
             cmd.push(
-                0x00, o.a, 0x00, 0xEC, 0xC4, 0x1E, o.b, 0x23, 0x03, 0x7A, o.c, 0x00, 0x07, 0x00, 0x03, o.d, 0x00, 0x00, (f >> 8) & 0xFF, f & 0xFF, 0x00, 0x00, 0x00, 0x00
+                o.x, o.a, 0x00, 0xEC, 0xC4, 0x1E, o.b, 0x23, 0x03, 0x7A, o.c, 0x00, 0x07, 0x00, 0x03, o.d, 0x00, 0x00, (f >> 8) & 0xFF, f & 0xFF, 0x00, 0x00, 0x00, 0x00
             );
         }
         const total = count;
@@ -246,7 +294,8 @@ class WiPryClarity extends EventEmitter {
         cmd.unshift(0xAA);
         cmd = Buffer.from(Uint8Array.from(cmd));
         Log("_send:", cmd);
-        await new Promise(r => this.endpoint3.transfer(cmd, r));
+        const e = await new Promise(r => this.endpoint3.transfer(cmd, r));
+        Log("_send: e: ", e);
     }
 
     async _recv() {

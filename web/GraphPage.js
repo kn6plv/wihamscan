@@ -53,8 +53,7 @@ class GraphPage extends BasePage {
         const config = this.graph.config;
         const points = this.graph.points;
         if (typeof this.cursor.x === "number" && config && points) {
-            const p = points[Math.floor(this.cursor.x / width * points.length)];
-            const dbi = p / 100 * (config.maxRssi - config.noise) + config.noise;
+            const dbi = points[Math.floor(this.cursor.x / width * points.length)];
             const mhz = Math.round(this.cursor.x / width * (config.maxFreq - config.minFreq) + config.minFreq)
             this.send("html.update", {
                 id: "band-info",
