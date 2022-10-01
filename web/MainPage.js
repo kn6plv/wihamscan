@@ -47,13 +47,14 @@ class MainPage extends BasePage {
         const htext = [];
         const vtext = [];
         let band = null;
+        let xscale = 0;
 
         const config = WiPryClarity.config;
         if (config) {
 
             const minFreq = config.minFreq;
             const maxFreq = config.maxFreq;
-            const xscale = width / (maxFreq - minFreq);
+            xscale = width / (maxFreq - minFreq);
 
             for (let f = Math.ceil(minFreq / 20) * 20; f < maxFreq; f += 20) {
                 const x = (f - minFreq) * xscale;
@@ -92,6 +93,7 @@ class MainPage extends BasePage {
             band: band,
             freq: "-",
             signal: "-",
+            xscale: xscale
         });
     }
 }

@@ -20,6 +20,8 @@
         {{> BandInfoPage }}
     </div>
     <script>
+        const bandwidth = 10;
+        const width = bandwidth * {{xscale}};
         const info = document.getElementById("app-info");
         const cursor = document.getElementById("app-cursor");
         cursor.addEventListener("mouseenter", () => {
@@ -27,11 +29,11 @@
         });
         cursor.addEventListener("mouseleave", () => {
             info.style.opacity = "0";
-            send("move_cursor", { x: null });
+            send("move_cursor", { x: null, w: 0 });
         });
         cursor.addEventListener("mousemove", e => {
-            cursor.querySelector("path").setAttribute("d", `M ${e.offsetX} 0 V ${info.clientHeight}`);
-            send("move_cursor", { x: e.offsetX });
+            cursor.innerHTML = `<rect x=${e.offsetX - width / 2} y="0" width=${width} height="${info.clientHeight}" /><path d="M ${e.offsetX} 0 V ${info.clientHeight}" />`;
+            send("move_cursor", { x: e.offsetX, w: bandwidth });
         });
     </script>
 </body>

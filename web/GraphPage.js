@@ -24,6 +24,7 @@ class GraphPage extends BasePage {
 
     async cmd_move_cursor(msg) {
         this.cursor.x = msg.value.x;
+        this.cursor.bandwidth = msg.value.w;
         this.pointUpdated();
     }
 
@@ -53,12 +54,20 @@ class GraphPage extends BasePage {
         const config = this.graph.config;
         const points = this.graph.points;
         if (typeof this.cursor.x === "number" && config && points) {
-            const dbi = points[Math.floor(this.cursor.x / width * points.length)];
-            const mhz = Math.round(this.cursor.x / width * (config.maxFreq - config.minFreq) + config.minFreq)
+            const scale = (config.maxFreq - config.minFreq) / width;
+            const centerMHz = Math.round(this.cursor.x * scale + config.minFreq);
+            let sp = Math.floor(this.cursor.x / width * points.length);
+            let dbi = -140;
+            for (let p = Math.max(0, this.cursor.bandwidth / scale - 1); p >= 0 && sp < points.length; p--, sp++) {
+                const v = points[sp];
+                if (v > dbi) {
+                    dbi = v;
+                }
+            }
             this.send("html.update", {
                 id: "band-info",
                 html: this.Template.BandInfo({
-                    freq: mhz,
+                    freq: centerMHz,
                     signal: Math.round(dbi),
                 })
             });
