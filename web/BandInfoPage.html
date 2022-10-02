@@ -1,21 +1,33 @@
 <div id="bandinfo-page">
     <div class="title">Band</div>
     <div class="info">
-        <select>
+        <select class="band">
             <option value="3" {{#if (eq band 3)}}selected{{/if}}>2200 - 2600 MHz</option>
             <option value="0" {{#if (eq band 0)}}selected{{/if}}>2400 - 2500 MHz</option>
-            <option value="4" {{#if (eq band 41)}}selected{{/if}}>3200 - 3600 MHz</option>
+            <option value="4" {{#if (eq band 4)}}selected{{/if}}>3200 - 3600 MHz</option>
             <option value="1" {{#if (eq band 1)}}selected{{/if}}>5145 - 5860 MHz</option>
             <option value="5" {{#if (eq band 5)}}selected{{/if}}>5500 - 6300 MHz</option>
             <option value="2" {{#if (eq band 2)}}selected{{/if}}>5925 - 7125 MHz</option>
+        </select>
+    </div>
+    <div class="title">Bandwidth</div>
+    <div class="info">
+        <select class="bandwidth">
+            <option value="1" selected>-</option>
+            <option value="5">5 MHz</option>
+            <option value="10">10 MHz</option>
+            <option value="20">20 MHz</option>
         </select>
     </div>
     <div id="band-info">
         {{> BandInfo }}
     </div>
     <script>
-        document.querySelector("#bandinfo-page .info select").addEventListener("change", e => {
+        document.querySelector("#bandinfo-page .band").addEventListener("change", e => {
             send("change_band", { band: parseInt(e.target.value) });
+        });
+        document.querySelector("#bandinfo-page .bandwidth").addEventListener("change", e => {
+            changeBandwidth(parseInt(e.target.value));
         });
     </script>
 </div>

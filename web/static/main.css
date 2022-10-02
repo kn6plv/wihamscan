@@ -68,7 +68,7 @@ svg {
 
 #app-cursor rect {
     stroke: transparent;
-    fill: rgba(255,255,0,0.25);
+    fill: rgba(255,255,255,0.25);
 }
 
 #app-cursor path {
