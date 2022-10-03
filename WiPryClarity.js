@@ -66,6 +66,7 @@ const bands = {
         stepSamples: 256
     }
 };
+const BAND_DEFAULT = BAND_HAM_58_59;
 
 class WiPryClarity extends EventEmitter {
 
@@ -85,7 +86,7 @@ class WiPryClarity extends EventEmitter {
         Log("open", band);
         this.opened++;
         if (this.opened === 1) {
-            this.band = typeof band == "number" ? band : BAND_RSSI_5GHZ;
+            this.band = band !== undefined ? band : BAND_DEFAULT;
             await this._configure(bands[this.band]);
         }
         else if (this.config) {

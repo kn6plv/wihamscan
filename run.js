@@ -14,6 +14,6 @@ process.on("SIGTERM", async () => {
 });
 
 const WiPryClarity = require("./WiPryClarity");
-WiPryClarity.open(WiPryClarity.BAND_5GHZ);
+WiPryClarity.open();
 
 require("./web/Web").open();

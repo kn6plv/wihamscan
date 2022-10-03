@@ -2,7 +2,6 @@ const WebConfig = require("./web/Config");
 const { app, BrowserWindow } = require('electron');
 const WiPryClarity = require("./WiPryClarity");
 const Web = require("./web/Web");
-const Config = require("./web/Config");
 
 let address = {};
 let win;
@@ -19,13 +18,13 @@ WiPryClarity.on("opened", () => {
         win.reload();
     }
 });
-WiPryClarity.open(WiPryClarity.BAND_5GHZ);
+WiPryClarity.open();
 
 const createWindow = () => {
     win = new BrowserWindow({
         backgroundColor: 'black',
-        width: 200 + Config.width,
-        height: 75 + Config.graphHeight + Config.waterHeight,
+        width: 200 + WebConfig.width,
+        height: 75 + WebConfig.graphHeight + WebConfig.waterHeight,
         resizable: false
     });
 
