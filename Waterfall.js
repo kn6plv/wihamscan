@@ -32,6 +32,7 @@ class Waterfall extends EventEmitter {
     }
 
     _onData(_, data) {
+        const now = Date.now();
         for (let i = this.points.length - 1; i >= 0; i--) {
             const opoint = this.points[i];
             const npoint = data[i];
@@ -42,6 +43,8 @@ class Waterfall extends EventEmitter {
                 this.points[i] = opoint * 0.9 + npoint * 0.1;
             }
         }
+        this.period = (now - this.lastUpdate) / 1000;
+        this.lastUpdate = now;
         this.emit("update");
     }
 

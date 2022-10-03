@@ -93,6 +93,7 @@ class MainPage extends BasePage {
             band: band,
             freq: "-",
             signal: "-",
+            channel: "-",
             xscale: xscale
         });
     }

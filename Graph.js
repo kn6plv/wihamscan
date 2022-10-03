@@ -34,8 +34,10 @@ class Graph extends EventEmitter {
 
     _onData(_, data) {
         const now = Date.now();
-        const keep = Math.pow(0.5, (now - this.lastUpdate) / 1000);
+        const period = (now - this.lastUpdate) / 1000;
+        const keep = Math.pow(0.5, period);
         this.lastUpdate = now;
+        this.period = period;
         for (let i = this.points.length - 1; i >= 0; i--) {
             const opoint = this.points[i];
             const npoint = data[i];

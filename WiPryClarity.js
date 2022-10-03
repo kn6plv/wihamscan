@@ -39,22 +39,22 @@ const bands = {
     [BAND_HAM_22_26]: {
         bandId: BAND_HAM_22_26,
         minFreq: 2200,
-        maxFreq: 2600,
-        stepFreq: 100,
+        maxFreq: 2650,
+        stepFreq: 90,
         stepSamples: 64
     },
     [BAND_HAM_32_36]: {
         bandId: BAND_HAM_32_36,
         minFreq: 3200,
-        maxFreq: 3600,
-        stepFreq: 100,
+        maxFreq: 3650,
+        stepFreq: 90,
         stepSamples: 64
     },
     [BAND_HAM_55_63]: {
         bandId: BAND_HAM_55_63,
         minFreq: 5500,
-        maxFreq: 6300,
-        stepFreq: 100,
+        maxFreq: 6310,
+        stepFreq: 90,
         stepSamples: 64
     },
 };
@@ -150,8 +150,7 @@ class WiPryClarity extends EventEmitter {
             noise: -95,
             minFreq: config.minFreq,
             maxFreq: config.maxFreq,
-            samples: (config.maxFreq - config.minFreq) / config.stepFreq * config.stepSamples,
-            period: Math.ceil((config.maxFreq - config.minFreq) / config.stepFreq / 4) * 0.5
+            samples: (config.maxFreq - config.minFreq) / config.stepFreq * config.stepSamples
         };
         Log("connected", this.config);
         this.emit("opened");
@@ -168,7 +167,6 @@ class WiPryClarity extends EventEmitter {
                 const buffer = await this._recv();
                 if (buffer[0] === 0xAA && buffer[2] === this.band) {
                     const data = new Float32Array(buffer.length - 4);
-                    const scale = (this.info.maxRssi - this.info.minRssi) / 256;
                     for (let i = 4; i < buffer.length; i++) {
                         const rssi = this.info.minRssi + (this.info.maxRssi - this.info.minRssi) / 256 * buffer.readUInt8(i);
                         data[i - 4] = rssi;
@@ -266,7 +264,7 @@ class WiPryClarity extends EventEmitter {
                 (config.stepSamples >> 8) & 0xFF, config.stepSamples & 0xFF, 0x00, 0xEC, 0xC4, 0x1E, o.b, 0x23, 0x03, 0x7A, o.c, 0x00, 0x07, 0x00, 0x03, o.d, 0x00, 0x00, (f >> 8) & 0xFF, f & 0xFF, 0x00, 0x00, 0x00, 0x00
             );
         }
-        const total = count;
+        const total = Math.ceil(count / 4) * 4;
         for (; count < 16; count++) {
             cmd.push(
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00

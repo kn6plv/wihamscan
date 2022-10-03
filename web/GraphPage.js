@@ -4,6 +4,23 @@ const BasePage = require("./BasePage");
 const height = 400;
 const width = 800;
 
+function mkchan(from, to, base) {
+    return {
+        f: from,
+        t: to,
+        c: function(freq) {
+            const c0 = (freq - from) / 5 + base;
+            const c1 = Math.floor(c0);
+            return `${c1}${c1 + 0.5 == c0 ? " (center)" : ""}`;
+        }
+    }
+}
+
+const channels = [
+    mkchan(2384.5, 2486.5, -4),
+    mkchan(3377.5, 3497.5, 76),
+    mkchan(5032.5, 5997.5,  7)
+];
 
 class GraphPage extends BasePage {
 
@@ -45,7 +62,7 @@ class GraphPage extends BasePage {
         this.send("svg.path.update", {
             id: "graph-data-path",
             d: d,
-            t: this.graph.config.period
+            t: this.graph.period
         });
         this.pointUpdated();
     }
@@ -56,6 +73,14 @@ class GraphPage extends BasePage {
         if (typeof this.cursor.x === "number" && config && points) {
             const scale = (config.maxFreq - config.minFreq) / width;
             const centerMHz = Math.round(this.cursor.x * scale + config.minFreq);
+            let channel = "-";
+            for (let i = 0; i < channels.length; i++) {
+                const c = channels[i];
+                if (centerMHz >= c.f && centerMHz < c.t) {
+                    channel = c.c(centerMHz);
+                    break;
+                }
+            }
             let sp = Math.floor(this.cursor.x / width * points.length);
             let dbi = -140;
             for (let p = Math.max(0, this.cursor.bandwidth / scale - 1); p >= 0 && sp < points.length; p--, sp++) {
@@ -69,6 +94,7 @@ class GraphPage extends BasePage {
                 html: this.Template.BandInfo({
                     freq: centerMHz,
                     signal: Math.round(dbi),
+                    channel: channel
                 })
             });
         }
@@ -78,6 +104,7 @@ class GraphPage extends BasePage {
                 html: this.Template.BandInfo({
                     freq: "-",
                     signal: "-",
+                    channel: "-"
                 })
             });
         }
