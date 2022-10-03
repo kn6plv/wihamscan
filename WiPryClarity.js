@@ -10,6 +10,7 @@ const BAND_RSSI_6E     = 2;
 const BAND_HAM_22_26 = 3;
 const BAND_HAM_32_36 = 4;
 const BAND_HAM_55_63 = 5;
+const BAND_HAM_58_59 = 6;
 
 const VID = 0x26ae;
 const PID = 0x000c;
@@ -57,6 +58,13 @@ const bands = {
         stepFreq: 90,
         stepSamples: 64
     },
+    [BAND_HAM_58_59]: {
+        bandId: BAND_HAM_58_59,
+        minFreq: 5850,
+        maxFreq: 5940,
+        stepFreq: 90,
+        stepSamples: 256
+    }
 };
 
 class WiPryClarity extends EventEmitter {
