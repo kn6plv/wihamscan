@@ -93,8 +93,8 @@ class GraphPage extends BasePage {
             this.send("html.update", {
                 id: "band-info",
                 html: this.Template.BandInfo({
-                    freq: centerMHz,
-                    signal: Math.round(dbi),
+                    freq: `${centerMHz} MHz`,
+                    signal: `${Math.round(dbi)} dBi`,
                     channel: channel
                 })
             });

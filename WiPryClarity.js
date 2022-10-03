@@ -19,8 +19,8 @@ const bands = {
     [BAND_RSSI_2_4GHZ]: {
         bandId: BAND_RSSI_2_4GHZ,
         minFreq: 2400,
-        maxFreq: 2500,
-        stepFreq: 100,
+        maxFreq: 2490,
+        stepFreq: 90,
         stepSamples: 256
     },
     [BAND_RSSI_5GHZ]: {
@@ -33,8 +33,8 @@ const bands = {
     [BAND_RSSI_6E]: {
         bandId: BAND_RSSI_6E,
         minFreq: 5925,
-        maxFreq: 7125,
-        stepFreq: 100,
+        maxFreq: 7185,
+        stepFreq: 90,
         stepSamples: 64
     },
     [BAND_HAM_22_26]: {
@@ -96,9 +96,12 @@ class WiPryClarity extends EventEmitter {
 
     async close(force) {
         Log("close");
-        if (--this.opened <= 0 || force) {
-            this.opened = 0;
-            await this._closeDevice();
+        if (this.opened > 0) {
+            this.opened--;
+            if (this.opened === 0 || force) {
+                await this._closeDevice();
+                this.opened = 0;
+            }
         }
     }
 

@@ -48,5 +48,4 @@ app.on('window-all-closed', async () => {
     if (process.platform !== 'darwin') {
         app.quit();
     }
-    process.exit();
 });
