@@ -1,11 +1,12 @@
+const Config = require("./Config");
 const BasePage = require("./BasePage");
 const GraphPage = require("./GraphPage");
 const WaterfallPage = require("./WaterfallPage");
 const WiPryClarity = require("../WiPryClarity");
 
-const width = 800;
-const height = 400;
-const wheight = 200;
+const width = Config.width;
+const height = Config.graphHeight;
+const wheight = Config.waterHeight;
 
 
 class MainPage extends BasePage {

@@ -14,8 +14,8 @@ svg {
 #graph-page {
     position: relative;
     border: 1px solid grey;
-    width: 800px;
-    height: 400px;
+    width: var(--display-width);
+    height: var(--graph-height);
     background-color: black;
 }
 
@@ -56,8 +56,8 @@ svg {
 
 #app-info {
     position: absolute;
-    width: 800px;
-    height: 600px;
+    width: var(--display-width);
+    height: var(--display-height);
     margin-top: 2px;
     z-index: 20;
 }
@@ -80,8 +80,8 @@ svg {
 #waterfall-page {
     position: relative;
     border: 1px solid grey;
-    width: 800px;
-    height: 200px;
+    width: var(--display-width);
+    height: var(--waterfall-height);
     background-color: black;
     overflow: hidden;
 }
@@ -92,7 +92,7 @@ svg {
 
 #waterfall-data svg {
     height: 2px;
-    width: 800px;
+    width: var(--display-width);
 }
 
 #waterfall-data-scroll {
@@ -102,7 +102,8 @@ svg {
 #bandinfo-page {
     position: absolute;
     top: 25px;
-    left: 840px;
+    left: var(--display-width);
+    padding-left: 40px;
     width: 100px;
     height: 400px;
 }

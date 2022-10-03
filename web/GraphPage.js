@@ -1,8 +1,9 @@
+const Config = require("./Config");
 const Graph = require("../Graph");
 const BasePage = require("./BasePage");
 
-const height = 400;
-const width = 800;
+const height = Config.graphHeight;
+const width = Config.width;
 
 function mkchan(from, to, base) {
     return {

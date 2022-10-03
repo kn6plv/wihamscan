@@ -1,6 +1,9 @@
+const Config = require("./Config");
 const Waterfall = require("../Waterfall");
-const { config } = require("../WiPryClarity");
 const BasePage = require("./BasePage");
+
+const width = Config.width;
+
 
 class WaterfallPage extends BasePage {
 
@@ -24,7 +27,6 @@ class WaterfallPage extends BasePage {
         const points = this.waterfall.points;
         const config = this.waterfall.config;
         const len = points.length;
-        const width = 800;
         const xscale = width / len;
         let l = '';
         for (let i = 0; i < len; i++) {
