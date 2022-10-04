@@ -153,7 +153,7 @@ class WiPryClarity extends EventEmitter {
         }
         
         this.info = await this._reset();
-        await this._unknown_cmd1();
+        await this._authenticate();
         await this._sweep(config);
         this.config = {
             minRssi: this.info.minRssi,
@@ -221,7 +221,8 @@ class WiPryClarity extends EventEmitter {
                     candidate: buffer.readUInt8(4),
                     siliconId: buffer.toString("utf8", 8, 20),
                     maxRssi: buffer.readFloatBE(20),
-                    minRssi: buffer.readFloatBE(24)
+                    minRssi: buffer.readFloatBE(24),
+                    challenge: buffer.subarray(60, 68)
                 };
                 info.noise = info.minRssi + (info.maxRssi - info.minRssi) / 256 * buffer.readUInt32LE(32);
                 Log(info);
@@ -230,19 +231,14 @@ class WiPryClarity extends EventEmitter {
         }
     }
 
-    async _unknown_cmd1() {
+    async _authenticate() {
+        // This is always the same
         const cmd = [ 0x00, 0x00, 0xD8, 0xC2, 0x46, 0xBD, 0x24, 0xBD, 0xAE, 0x50 ];
-        // Followed by what looks like 8 random values
-        // This part appears fixed
-        // 29 AC 9D F8 6F F9 CD 15
-        // 00101001 10101100 10011101 11111000 01101111 11111001 11001101 00010101 
-        // EC 2D A0 A0 97 8D E5 BE
-        // 11101100 00101101 10100000 10100000 10010111 10001101 11100101 10111110 
-        //for (let i = 0; i < 8; i++) {
-        //    cmd.push(Math.round(Math.random() * 255))
-        //}
-        // But it isn't because random doesn't seem to work.
-        //cmd.push(0x09, 0x0D, 0xD5, 0x08, 0x77, 0xAB, 0x9B, 0x07); // This works - but other values do too ???
+        // And this is always different.
+        // It appears to be some sort of answer to the challenge issued when the device resets.
+        // However, this value always works regardless of the challenge sent earlier.
+        // It is probably tied to the hardware itself (silicon id maybe) but that's unknown and may
+        // not work on other hardware.
         cmd.push(0x29, 0xAC, 0x9D, 0xF8, 0x6F, 0xF9, 0xCD, 0x15); 
         await this._send(cmd);
         for (;;) {
@@ -276,6 +272,7 @@ class WiPryClarity extends EventEmitter {
                 (config.stepSamples >> 8) & 0xFF, config.stepSamples & 0xFF, 0x00, 0xEC, 0xC4, 0x1E, o.b, 0x23, 0x03, 0x7A, o.c, 0x00, 0x07, 0x00, 0x03, o.d, 0x00, 0x00, (f >> 8) & 0xFF, f & 0xFF, 0x00, 0x00, 0x00, 0x00
             );
         }
+        const samples = count * config.stepSamples;
         const total = Math.ceil(count / 4) * 4;
         for (; count < 16; count++) {
             cmd.push(
@@ -283,7 +280,7 @@ class WiPryClarity extends EventEmitter {
             );
         }
         cmd.push(
-            Math.ceil(total / 4), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, config.bandId, total, 0x53
+            (samples >> 8) & 0xFF, samples & 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, config.bandId, total, 0x53
         );
         await this._send(cmd);
         await this._recv();
