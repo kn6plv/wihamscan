@@ -1,7 +1,7 @@
 const Log = require("debug")("wipryclarity");
 const EventEmitter = require("events");
-const { loadavg } = require("os");
 const USB = require("usb");
+const WiPryClarityAuth = null;//require("bindings")("WiPryClarity");
 
 const BAND_RSSI_2_4GHZ = 0;
 const BAND_RSSI_5GHZ   = 1;
@@ -80,6 +80,7 @@ class WiPryClarity extends EventEmitter {
         this.opened = 0;
         this.config = null;
         this.band = null;
+        this.first = true;
     }
 
     async open(band) {
@@ -110,6 +111,7 @@ class WiPryClarity extends EventEmitter {
         if (band !== this.band) {
             this.band = band;
             await this._closeDevice();
+            await new Promise(r => setTimeout(r, 2000));
             await this._configure(bands[this.band]);
         }
     }
@@ -142,33 +144,43 @@ class WiPryClarity extends EventEmitter {
 
     async _configure(config) {
         // Setup the physical device
+        if (this.first && WiPryClarityAuth) {
+            this.first = false;
+            const auth = new WiPryClarityAuth.MyMonitor();
+            auth.open(0);
+            await new Promise(r => setTimeout(r, 2000));
+            auth.close();
+        }
         for (;;) {
             try {
                 await this._openDevice();
+                this.info = await this._reset();
+                if (this.first) {
+                    this.first = false;
+                    await this._authenticate();
+                }
+                await this._sweep(config);
+                this.config = {
+                    minRssi: this.info.minRssi,
+                    maxRssi: this.info.maxRssi,
+                    maxRssi: Math.min(-40, this.info.maxRssi),
+                    noise: -95,
+                    minFreq: config.minFreq,
+                    maxFreq: config.maxFreq,
+                    samples: (config.maxFreq - config.minFreq) / config.stepFreq * config.stepSamples
+                };
+                Log("connected", this.config);
+                this.emit("opened");
+                this.emit("connected", this.config);
+                await this._start();
+                this._poll();
                 break;
             }
-            catch (_) {
+            catch (e) {
+                Log(e);
                 await this._closeDevice();
             }
         }
-        
-        this.info = await this._reset();
-        await this._authenticate();
-        await this._sweep(config);
-        this.config = {
-            minRssi: this.info.minRssi,
-            maxRssi: this.info.maxRssi,
-            maxRssi: Math.min(-40, this.info.maxRssi),
-            noise: -95,
-            minFreq: config.minFreq,
-            maxFreq: config.maxFreq,
-            samples: (config.maxFreq - config.minFreq) / config.stepFreq * config.stepSamples
-        };
-        Log("connected", this.config);
-        this.emit("opened");
-        this.emit("connected", this.config);
-        await this._start();
-        this._poll();
     }
 
     async _poll() {
@@ -195,7 +207,7 @@ class WiPryClarity extends EventEmitter {
 
     async _reset() {
         Log("_reset");
-        let count = 10;
+        let count = 0;
         for (;;) {
             let done = false;
             let buffer = null;
@@ -205,10 +217,10 @@ class WiPryClarity extends EventEmitter {
                 done = true;
             });
             while (!done) {
-                count++;
-                if (count > 10) {
+                count--;
+                if (count < 0) {
                     await this._send([ 0x03 ]);
-                    count = 0;
+                    count = 10;
                 }
                 await new Promise(r => setTimeout(r, 100));
             }
@@ -222,12 +234,15 @@ class WiPryClarity extends EventEmitter {
                     siliconId: buffer.toString("utf8", 8, 20),
                     maxRssi: buffer.readFloatBE(20),
                     minRssi: buffer.readFloatBE(24),
+                    // The challenge is always the same after the device is first plugged in.
+                    // Not sure if its contact or hardware keyed in some way
                     challenge: buffer.subarray(60, 68)
                 };
                 info.noise = info.minRssi + (info.maxRssi - info.minRssi) / 256 * buffer.readUInt32LE(32);
                 Log(info);
                 return info;
             }
+            count = 0;
         }
     }
 
@@ -239,7 +254,7 @@ class WiPryClarity extends EventEmitter {
         // However, this value always works regardless of the challenge sent earlier.
         // It is probably tied to the hardware itself (silicon id maybe) but that's unknown and may
         // not work on other hardware.
-        cmd.push(0x29, 0xAC, 0x9D, 0xF8, 0x6F, 0xF9, 0xCD, 0x15); 
+        cmd.push(0xC1, 0x9C, 0x45, 0x75, 0x13, 0x49, 0x40, 0xD3);
         await this._send(cmd);
         for (;;) {
             const buffer = await this._recv();

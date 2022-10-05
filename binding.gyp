@@ -2,7 +2,7 @@
   "targets": [
     {
       "target_name": "WiPryClarity",
-      "sources": [ "lib/WiPryClarity.cc" ],
+      "sources": [ "lib/WiPryClarityAuth.cc" ],
       "include_dirs" : [
         "<!@(node -p \"require('node-addon-api').include\")"
       ],

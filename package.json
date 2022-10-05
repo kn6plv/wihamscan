@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "electron-forge start",
-    "xbuild": "node-gyp --release --thin=yes rebuild",
+    "build": "node-gyp --release --thin=yes rebuild",
     "package": "electron-forge package",
     "make": "electron-forge make --arch=arm64;#electron-forge make --arch=x64"
   },
