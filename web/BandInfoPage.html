@@ -26,6 +26,7 @@
     <script>
         document.querySelector("#bandinfo-page .band").addEventListener("change", e => {
             send("change_band", { band: parseInt(e.target.value) });
+            e.target.disabled = true;
         });
         document.querySelector("#bandinfo-page .bandwidth").addEventListener("change", e => {
             changeBandwidth(parseInt(e.target.value));
