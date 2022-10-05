@@ -130,9 +130,9 @@ onMessage['waterfall.update'] = msg => {
     waterfall.style.top = `-2px`;
     waterfall.insertBefore(e, waterfall.firstElementChild);
     setTimeout(() => {
-      waterfall.style.transition = `top ${msg.value.t - 0.01}s linear`;
+      waterfall.style.transition = `top ${msg.value.t - 0.02}s linear`;
       waterfall.style.top = "0px";
-    }, 10);
+    }, 20);
     if (waterfall.childElementCount > 120) {
       waterfall.removeChild(waterfall.lastElementChild);
     }

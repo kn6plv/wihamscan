@@ -1,7 +1,7 @@
 const Log = require("debug")("wipryclarity");
 const EventEmitter = require("events");
 const USB = require("usb");
-const WiPryClarityAuth = null;//require("bindings")("WiPryClarity");
+const WiPryClarityAuth = require("bindings")("WiPryClarity");
 
 const BAND_RSSI_2_4GHZ = 0;
 const BAND_RSSI_5GHZ   = 1;
