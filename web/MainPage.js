@@ -57,7 +57,8 @@ class MainPage extends BasePage {
             const maxFreq = config.maxFreq;
             xscale = width / (maxFreq - minFreq);
 
-            for (let f = Math.ceil(minFreq / 20) * 20; f < maxFreq; f += 20) {
+            const step = xscale > 5 ? 10 : xscale > 1 ? 20 : 50;
+            for (let f = Math.ceil(minFreq / step) * step; f < maxFreq; f += step) {
                 const x = (f - minFreq) * xscale;
                 grid += ` M ${x} ${height} V 0`;
                 wgrid += ` M ${x} ${wheight} V 0`;
