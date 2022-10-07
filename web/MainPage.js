@@ -48,6 +48,7 @@ class MainPage extends BasePage {
         const htext = [];
         const vtext = [];
         let band = null;
+        let bands = [];
         let xscale = 0;
 
         const config = WiPryClarity.config;
@@ -81,6 +82,7 @@ class MainPage extends BasePage {
                 });
             }
 
+            bands = WiPryClarity.getBands();
             band = WiPryClarity.band;
         }
 
@@ -92,6 +94,7 @@ class MainPage extends BasePage {
             waterfall_grid: wgrid,
             graph_vtext: vtext,
             graph_htext: htext,
+            bands: bands,
             band: band,
             freq: "-",
             signal: "-",

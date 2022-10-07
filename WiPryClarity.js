@@ -16,27 +16,6 @@ const VID = 0x26ae;
 const PID = 0x000c;
 
 const bands = {
-    [BAND_RSSI_2_4GHZ]: {
-        bandId: BAND_RSSI_2_4GHZ,
-        minFreq: 2400,
-        maxFreq: 2490,
-        stepFreq: 90,
-        stepSamples: 256
-    },
-    [BAND_RSSI_5GHZ]: {
-        bandId: BAND_RSSI_5GHZ,
-        minFreq: 5145,
-        maxFreq: 5865,
-        stepFreq: 90,
-        stepSamples: 64
-    },
-    [BAND_RSSI_6E]: {
-        bandId: BAND_RSSI_6E,
-        minFreq: 5925,
-        maxFreq: 7185,
-        stepFreq: 90,
-        stepSamples: 64
-    },
     [BAND_HAM_22_26]: {
         bandId: BAND_HAM_22_26,
         minFreq: 2200,
@@ -44,10 +23,24 @@ const bands = {
         stepFreq: 90,
         stepSamples: 64
     },
+    [BAND_RSSI_2_4GHZ]: {
+        bandId: BAND_RSSI_2_4GHZ,
+        minFreq: 2400,
+        maxFreq: 2490,
+        stepFreq: 90,
+        stepSamples: 256
+    },
     [BAND_HAM_32_36]: {
         bandId: BAND_HAM_32_36,
         minFreq: 3200,
         maxFreq: 3650,
+        stepFreq: 90,
+        stepSamples: 64
+    },
+    [BAND_RSSI_5GHZ]: {
+        bandId: BAND_RSSI_5GHZ,
+        minFreq: 5145,
+        maxFreq: 5865,
         stepFreq: 90,
         stepSamples: 64
     },
@@ -64,6 +57,13 @@ const bands = {
         maxFreq: 5940,
         stepFreq: 90,
         stepSamples: 256
+    },
+    [BAND_RSSI_6E]: {
+        bandId: BAND_RSSI_6E,
+        minFreq: 5925,
+        maxFreq: 7185,
+        stepFreq: 90,
+        stepSamples: 64
     }
 };
 const BAND_DEFAULT = BAND_HAM_58_59;
@@ -116,6 +116,20 @@ class WiPryClarity extends EventEmitter {
             await new Promise(r => setTimeout(r, 2000));
             await this._configure(bands[this.band]);
         }
+    }
+
+    getBands() {
+        const b = [];
+        for (let k in bands) {
+            const band = bands[k];
+            b.push({
+                key: k,
+                from: band.minFreq,
+                to: band.maxFreq
+            });
+        }
+        b.sort((a, b) => a.from - b.from);
+        return b;
     }
 
     async _openDevice() {
