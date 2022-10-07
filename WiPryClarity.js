@@ -72,11 +72,7 @@ class WiPryClarity extends EventEmitter {
 
     constructor() {
         super();
-
-        this.device = USB.findByIds(VID, PID);
-        if (!this.device) {
-            throw new Error("No WiPryClarity device found");
-        }
+        this.device = null;
         this.opened = 0;
         this.config = null;
         this.band = null;
@@ -86,6 +82,12 @@ class WiPryClarity extends EventEmitter {
     async open(band) {
         Log("open", band);
         this.opened++;
+        if (!this.device) {
+            this.device = USB.findByIds(VID, PID);
+            if (!this.device) {
+                throw new Error("No WiPryClarity device found");
+            }
+        }
         if (this.opened === 1) {
             this.band = band !== undefined ? band : BAND_DEFAULT;
             await this._configure(bands[this.band]);

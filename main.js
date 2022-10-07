@@ -1,10 +1,11 @@
 const WebConfig = require("./web/Config");
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, dialog } = require('electron');
 const WiPryClarity = require("./WiPryClarity");
 const Web = require("./web/Web");
 
 let address = {};
 let win;
+let pendingMsg;
 
 Web.open(0).then(a => {
     address = a;
@@ -18,7 +19,11 @@ WiPryClarity.on("opened", () => {
         win.reload();
     }
 });
-WiPryClarity.open();
+WiPryClarity.open().catch(_ => {
+    pendingMsg = {
+        message: "WiPry Clarity hardware not found"
+    };
+});
 
 const createWindow = () => {
     win = new BrowserWindow({
@@ -32,13 +37,18 @@ const createWindow = () => {
 };
 
 app.whenReady().then(() => {
-    createWindow();
-
-    app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow();
-        }
-    });
+    if (pendingMsg) {
+        dialog.showMessageBoxSync(pendingMsg);
+        app.quit();
+    }
+    else {
+        createWindow();
+        app.on('activate', () => {
+            if (BrowserWindow.getAllWindows().length === 0) {
+                createWindow();
+            }
+        });
+    }
 });
 
 app.on('window-all-closed', async () => {
