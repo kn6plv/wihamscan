@@ -99,12 +99,13 @@ class WiPryClarity extends EventEmitter {
     }
 
     async close(force) {
-        Log("close");
+        Log("close", this.opened, force);
         if (this.opened > 0) {
             this.opened--;
             if (this.opened === 0 || force) {
-                await this._closeDevice();
                 this.opened = 0;
+                await this._closeDevice();
+                Log("closed");
             }
         }
     }

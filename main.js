@@ -54,7 +54,5 @@ app.whenReady().then(() => {
 app.on('window-all-closed', async () => {
     await WiPryClarity.close(true);
     Web.close();
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+    app.quit();
 });
